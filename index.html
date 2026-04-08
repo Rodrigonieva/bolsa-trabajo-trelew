@@ -4,65 +4,18 @@
 <meta charset="UTF-8">
 <title>Bolsa de Trabajo - Trelew</title>
 <style>
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    background: #eef2f3;
-}
-header {
-    background: #0077cc;
-    color: white;
-    padding: 20px;
-    text-align: center;
-}
-.container {
-    padding: 20px;
-    max-width: 900px;
-    margin: auto;
-}
-.card {
-    background: white;
-    padding: 20px;
-    margin-bottom: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-.boton {
-    display: inline-block;
-    margin-top: 10px;
-    background: #0077cc;
-    color: white;
-    padding: 10px 15px;
-    text-decoration: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-.boton:hover {
-    background: #005fa3;
-}
-.publicidad {
-    background: #222;
-    color: white;
-    padding: 20px;
-    text-align: center;
-    border-radius: 8px;
-}
-footer {
-    text-align: center;
-    padding: 15px;
-    background: #ddd;
-    margin-top: 20px;
-}
-#formulario-iframe {
-    display: none;
-    width: 100%;
-    height: 700px;
-    border: none;
-    margin-top: 20px;
-}
-#lista-empleos .card {
-    margin-top: 10px;
-}
+body { font-family: Arial, sans-serif; margin: 0; background: #eef2f3; }
+header { background: #0077cc; color: white; padding: 20px; text-align: center; }
+header h1 { margin: 0; }
+main { padding: 20px; max-width: 900px; margin: auto; }
+section { margin-bottom: 40px; }
+h2 { color: #0077cc; margin-bottom: 10px; }
+.card { background: white; padding: 15px; margin-bottom: 10px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+button { background: #0077cc; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; }
+button:hover { background: #005fa3; }
+input, textarea { width: 100%; padding: 8px; margin-bottom: 10px; border-radius: 4px; border: 1px solid #ccc; }
+iframe { width: 100%; border: none; border-radius: 5px; margin-top: 10px; }
+footer { text-align: center; padding: 15px; background: #ddd; margin-top: 20px; }
 </style>
 </head>
 <body>
@@ -72,88 +25,94 @@ footer {
     <p>Conectando personas con oportunidades laborales</p>
 </header>
 
-<div class="container">
+<main>
 
-    <div class="card">
-        <h2>👤 Busco Empleo</h2>
-        <p>Cargá tus datos para que empresas puedan encontrarte.</p>
-        <button id="btnFormulario" class="boton">Completar formulario</button>
-    </div>
+    <!-- Sección para publicar empleos -->
+    <section>
+        <h2>🏢 Publicar Empleo</h2>
+        <form id="formulario">
+            <input type="text" placeholder="Nombre de la empresa" required>
+            <input type="text" placeholder="Puesto" required>
+            <textarea placeholder="Descripción del empleo" rows="3" required></textarea>
+            <button type="submit">Publicar Empleo</button>
+        </form>
+    </section>
 
-    <div class="card">
-        <h2>🏢 Ofrezco Empleo</h2>
-        <p>Publicá una oferta laboral en pocos pasos.</p>
-        <button id="btnPublicar" class="boton">Publicar empleo</button>
-    </div>
+    <!-- Lista de empleos publicados -->
+    <section>
+        <h2>📋 Empleos Publicados</h2>
+        <div id="lista-empleos"></div>
+    </section>
 
-    <div class="card" id="lista-empleos">
-        <h2>📋 Ofertas Recientes</h2>
-        <p>(Se mostrarán los empleos disponibles abajo)</p>
-    </div>
+    <!-- Sección del formulario de postulantes -->
+    <section>
+        <h2>👤 Formulario de Postulación</h2>
+        <iframe 
+            src="https://docs.google.com/forms/d/e/1FAIpQLSdcP6OQx_JUmYWkwn69noNw3Wf4kqY-CJix0NI6rafTVeXlvg/viewform?embedded=true" 
+            height="800">
+            Cargando…
+        </iframe>
+    </section>
 
-    <div class="publicidad">
-        <h3>🔧 Ferretería FACILCOM</h3>
-        <p>Importación de herramientas y artículos industriales</p>
-        <p>Ventas online en Trelew y alrededores</p>
-        <p>📞 2804 659067</p>
-    </div>
-
-    <!-- Iframe del formulario de Google -->
-    <iframe id="formulario-iframe" src="https://docs.google.com/forms/d/e/1FAIpQLSdcP6OQx_JUmYWkwn69noNw3Wf4kqY-CJix0NI6rafTVeXlvg/viewform?embedded=true">
-        Cargando…
-    </iframe>
-
-</div>
+</main>
 
 <footer>
     <p>© 2026 Bolsa de Trabajo Trelew</p>
 </footer>
 
 <script>
-// Botón para mostrar formulario de Google
-document.getElementById("btnFormulario").addEventListener("click", function() {
-    const iframe = document.getElementById("formulario-iframe");
-    iframe.style.display = iframe.style.display === "none" ? "block" : "none";
+// Referencias
+const formulario = document.getElementById("formulario");
+const lista = document.getElementById("lista-empleos");
+
+// Cargar empleos guardados
+document.addEventListener("DOMContentLoaded", cargarEmpleos);
+
+// Al enviar formulario
+formulario.addEventListener("submit", function(e) {
+    e.preventDefault();
+    const inputs = formulario.querySelectorAll("input, textarea");
+    const empleo = {
+        empresa: inputs[0].value,
+        puesto: inputs[1].value,
+        descripcion: inputs[2].value
+    };
+    guardarEmpleo(empleo);
+    mostrarEmpleo(empleo);
+    formulario.reset();
 });
 
-// Datos de empleos
-let empleos = JSON.parse(localStorage.getItem("empleos")) || [];
+// Guardar en localStorage
+function guardarEmpleo(empleo) {
+    let empleos = JSON.parse(localStorage.getItem("empleos")) || [];
+    empleos.push(empleo);
+    localStorage.setItem("empleos", JSON.stringify(empleos));
+}
 
-// Función para mostrar empleos
+// Mostrar empleo
 function mostrarEmpleo(empleo) {
-    const lista = document.getElementById("lista-empleos");
     const card = document.createElement("div");
-    card.className = "card";
+    card.classList.add("card");
     card.innerHTML = `
         <h3>${empleo.puesto}</h3>
         <p><strong>${empleo.empresa}</strong></p>
         <p>${empleo.descripcion}</p>
-        <button class="boton" onclick="eliminarEmpleo(this)">Eliminar</button>
+        <button onclick="eliminarEmpleo(this)">Eliminar</button>
     `;
     lista.appendChild(card);
 }
 
-// Cargar empleos al inicio
-empleos.forEach(mostrarEmpleo);
-
-// Botón para publicar empleo
-document.getElementById("btnPublicar").addEventListener("click", function() {
-    const empresa = prompt("Nombre de la empresa:");
-    const puesto = prompt("Puesto:");
-    const descripcion = prompt("Descripción:");
-
-    if(empresa && puesto && descripcion){
-        const empleo = {empresa, puesto, descripcion};
-        empleos.push(empleo);
-        localStorage.setItem("empleos", JSON.stringify(empleos));
-        mostrarEmpleo(empleo);
-    }
-});
+// Cargar empleos al iniciar
+function cargarEmpleos() {
+    let empleos = JSON.parse(localStorage.getItem("empleos")) || [];
+    empleos.forEach(mostrarEmpleo);
+}
 
 // Eliminar empleo
 function eliminarEmpleo(boton) {
     const card = boton.parentElement;
     const puesto = card.querySelector("h3").textContent;
+    let empleos = JSON.parse(localStorage.getItem("empleos"));
     empleos = empleos.filter(e => e.puesto !== puesto);
     localStorage.setItem("empleos", JSON.stringify(empleos));
     card.remove();
